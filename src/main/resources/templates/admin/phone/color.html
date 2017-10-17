@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>layout 后台大布局 - Layui</title>
+    <link rel="stylesheet" href="../../../css/layui.css">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin ">
+    <div class="layui-header">
+        <div class="layui-logo" style="color: #ff6767;">小白 - 杂货铺后台</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="https://liuyouth.github.io/img/root_icon.png" class="layui-nav-img">
+                    小白
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退了</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side ">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">phone</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">index</a></dd>
+                        <dd><a href="javascript:;">model</a></dd>
+                        <dd class="layui-this"><a href="javascript:;">color</a></dd>
+                        <dd><a href="javascript:;">配件</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">收藏站点</a>
+                </li>
+                <li class="layui-nav-item"><a href="">友联</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div class="layui-container">
+            <button class="layui-btn" onclick="showAddView()">添加</button>
+
+
+
+
+
+            <div class="layui-row">
+                <div class="layui-col-md12">
+                  型号列表
+                </div>
+                <div class="layui-col-md12">
+
+                    <table class="layui-hide" id="LAY_table_user" lay-filter="user"></table>
+                </div>
+            </div>
+
+        </div>
+
+        <form id="add" class="layui-form" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+            <div class="layui-form-item">
+                <label class="layui-form-label">颜色名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" lay-submit lay-filter="*" onclick="post()">立即提交</button>
+                    <button type="button" class="layui-btn" lay-submit lay-filter="*" onclick="post1()">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+        </form>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © iolll.com - 小白的杂货铺
+    </div>
+</div>
+<script src="../../../js/jQuery.js" ></script>
+<script src="../../../js/base.js" ></script>
+<script src="../../../js/index.js" ></script>
+<script src="../../../js/layui.all.js"></script>
+
+<script>
+    var table
+    $(function () {
+       $("#add").hide();
+    });
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+    layui.use('table', function(){
+        table = layui.table;
+        loadTable();
+    });
+    function showAddView(){
+        $("#add").show();
+        var that = this;
+        //多窗口模式，层叠置顶
+        layer.open({
+            type: 1 //此处以iframe举例
+            ,title: '手机型号颜色添加'
+            ,area: ['500px', '360px']
+            ,shade: 0
+            //,maxmin: true
+//            ,offset: [ //为了演示，随机坐标
+//                Math.random()*($(window).height()-300)
+//                ,Math.random()*($(window).width()-390)
+//            ]
+            ,content: $("#add")
+            //,btn: ['继续弹出'] //只是为了演示
+            ,yes: function(){
+                $(that).click();
+
+            }
+            ,btn2: function(){
+                layer.closeAll();
+            }
+
+            ,zIndex: layer.zIndex //重点1
+            ,success: function(layero){
+                layer.setTop(layero); //重点2
+            },end:function(){
+                $("#add").hide();
+            }
+        });
+    };
+    function loadTable(){
+        //方法级渲染
+        table.render({
+            elem: '#LAY_table_user'
+            ,method:"post"
+            ,url: '/phone/color/list'
+            ,cols: [[
+
+                {edit:'text',checkbox: true, fixed: true}
+                ,{field:'id', title: 'ID', width:80, sort: true, fixed: true}
+                ,{field:'name', title: '颜色', width:120}
+//                ,{field:'sign', title: '签名', width:177}
+//                ,{field:'experience', title: '积分', sort: true, width:80}
+//                ,{field:'score', title: '评分', sort: true, width:80}
+//                ,{field:'classify', title: '职业', width:80}
+//                ,{field:'wealth', title: '财富', sort: true, width:135}
+            ]]
+            ,id: 'testReload'
+            ,page: true
+            ,limit: 15
+
+        });
+
+    }
+    function post(){
+        $.post("../../../phone/color/addw",$("#add").serialize(),function(result){
+            layer.closeAll();
+            layer.msg(result.message);
+            console.log(result.message);
+            loadTable();
+        },"json");
+    }
+    function post1() {
+        $.ajax({
+            url: "../../../phone/color/addw",
+            type: 'POST',
+            data:$("#add").serialize(),
+            dataType: 'json',
+            async: true,//同步
+            timeout: 5000,
+            error: function(data){
+                alert(data);
+            },
+            success: function(data){
+                console.log(data)
+            }
+        });
+
+    }
+</script>
+</body>
+</html>
